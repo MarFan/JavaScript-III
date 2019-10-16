@@ -1,9 +1,11 @@
 /*
-  Object oriented design is commonly used in video games.  For this part of the assignment you will be implementing several constructor functions with their correct inheritance hierarchy.
+  Object oriented design is commonly used in video games.  For this part of the assignment you will be implementing several constructor 
+  functions with their correct inheritance hierarchy.
 
   In this file you will be creating three constructor functions: GameObject, CharacterStats, Humanoid.  
 
-  At the bottom of this file are 3 objects that all end up inheriting from Humanoid.  Use the objects at the bottom of the page to test your constructor functions.
+  At the bottom of this file are 3 objects that all end up inheriting from Humanoid.  
+  Use the objects at the bottom of the page to test your constructor functions.
   
   Each constructor function has unique properties and methods that are defined in their block comments below:
 */
@@ -16,12 +18,34 @@
   * destroy() // prototype method that returns: `${this.name} was removed from the game.`
 */
 
+function GameObject(attributes) {
+  this.createdAt = attributes.createdAt;
+  this.name = attributes.name;
+  this.dimensions = attributes.dimensions;
+}
+
+GameObject.prototype.destroy = function(){
+  return `${this.name} was removed from the game.`;
+}
+
 /*
   === CharacterStats ===
   * healthPoints
   * takeDamage() // prototype method -> returns the string '<object name> took damage.'
   * should inherit destroy() from GameObject's prototype
 */
+
+function CharacterStats(attributes) {
+  GameObject.call(this, attributes),
+  this.healthPoints = attributes.healthPoints;
+  this.attackPoints = attributes.attackPoints;
+  this.defencePoints = attributes.defencePoints;
+}
+
+CharacterStats.prototype = Object.create(GameObject.prototype);
+CharacterStats.prototype.takeDamage = function()  {
+  return `${this.name} took damage`;
+}
 
 /*
   === Humanoid (Having an appearance or character resembling that of a human.) ===
@@ -33,6 +57,18 @@
   * should inherit takeDamage() from CharacterStats
 */
  
+function Humanoid(attributes) {
+  CharacterStats.call(this, attributes);  
+  this.team = attributes.team;
+  this.weapons = attributes.weapons;
+  this.language = attributes.language;
+}
+
+Humanoid.prototype = Object.create(CharacterStats.prototype);
+Humanoid.prototype.greet = function() {
+  return `${this.name} offers a greeting in ${this.language}`;
+}
+
 /*
   * Inheritance chain: GameObject -> CharacterStats -> Humanoid
   * Instances of Humanoid should have all of the same properties as CharacterStats and GameObject.
@@ -41,7 +77,7 @@
 
 // Test you work by un-commenting these 3 objects and the list of console logs below:
 
-/*
+
   const mage = new Humanoid({
     createdAt: new Date(),
     dimensions: {
@@ -102,9 +138,96 @@
   console.log(archer.greet()); // Lilith offers a greeting in Elvish.
   console.log(mage.takeDamage()); // Bruce took damage.
   console.log(swordsman.destroy()); // Sir Mustachio was removed from the game.
-*/
+
 
   // Stretch task: 
   // * Create Villain and Hero constructor functions that inherit from the Humanoid constructor function.  
   // * Give the Hero and Villains different methods that could be used to remove health points from objects which could result in destruction if health gets to 0 or drops below 0;
   // * Create two new objects, one a villain and one a hero and fight it out with methods!
+
+  function Villian(attributes) {
+    Humanoid.call(this, attributes);
+  }
+
+  Villian.prototype = Object.create(Humanoid.prototype);
+  Villian.prototype.attack = function(){
+    return Math.floor(Math.random() * this.attackPoints + 1);
+  }
+ 
+  function Hero(attributes) {
+    Humanoid.call(this, attributes);
+  }
+  Hero.prototype = Object.create(Humanoid.prototype);
+  Hero.prototype.attack = function(){
+    return Math.floor(Math.random() * this.attackPoints + 1);
+  }
+
+  const badGuy = new Villian({
+    createdAt: new Date(),
+    dimensions: {
+        length: 2,
+        width: 3,
+        height: 6
+    },
+    healthPoints: 25,
+    attackPoints: 8,
+    defencePoints: 12,
+    name: 'Bowser',
+    team: 'Koopa',
+    weapons: [
+      'Shell',
+      'Spikes'
+    ],
+    language: 'Toddler'
+  });
+
+  const goodGuy = new Hero({
+    createdAt: new Date(),
+    dimensions: {
+      length: 1,
+      width: 2,
+      height: 3
+    },
+    healthPoints: 12,
+    attackPoints: 8,
+    defencePoints: 8,
+    name: 'Luigi',
+    team: 'Bros.',
+    weapons: [
+      'Speed',
+      'Fireballs'
+    ],
+    language: 'Italian'
+  });
+
+function fight(){
+  let heroHealth = goodGuy.healthPoints;
+  let villianHealth = badGuy.healthPoints;
+
+  while(heroHealth >= 0 && villianHealth >= 0){
+    badGuyHit = Math.floor(Math.random() * badGuy.attackPoints + 1);
+    goodGuyHit = Math.floor(Math.random() * goodGuy.attackPoints + 1);
+    
+    if(badGuyHit > 0){
+      console.log(goodGuy.takeDamage());
+    }
+
+    if(goodGuyHit > 0){
+      console.log(badGuy.takeDamage());
+    }
+
+    heroHealth -= badGuyHit;
+    villianHealth -= goodGuyHit;
+  }
+
+  if(heroHealth <= 0){
+    console.log(goodGuy.destroy());
+  }
+
+  if(villianHealth <= 0){
+    console.log(badGuy.destroy());
+  }
+  
+}
+
+fight();
