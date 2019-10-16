@@ -149,6 +149,7 @@ Humanoid.prototype.greet = function() {
     Humanoid.call(this, attributes);
   }
 
+  Villian.prototype = Object.create(Humanoid.prototype);
   Villian.prototype.attack = function(){
     return Math.floor(Math.random() * this.attackPoints + 1);
   }
@@ -156,7 +157,7 @@ Humanoid.prototype.greet = function() {
   function Hero(attributes) {
     Humanoid.call(this, attributes);
   }
-
+  Hero.prototype = Object.create(Humanoid.prototype);
   Hero.prototype.attack = function(){
     return Math.floor(Math.random() * this.attackPoints + 1);
   }
@@ -199,5 +200,34 @@ Humanoid.prototype.greet = function() {
     language: 'Italian'
   });
 
-  console.log(goodGuy)
+function fight(){
+  let heroHealth = goodGuy.healthPoints;
+  let villianHealth = badGuy.healthPoints;
 
+  while(heroHealth >= 0 && villianHealth >= 0){
+    badGuyHit = Math.floor(Math.random() * badGuy.attackPoints + 1);
+    goodGuyHit = Math.floor(Math.random() * goodGuy.attackPoints + 1);
+    
+    if(badGuyHit > 0){
+      console.log(goodGuy.takeDamage());
+    }
+
+    if(goodGuyHit > 0){
+      console.log(badGuy.takeDamage());
+    }
+
+    heroHealth -= badGuyHit;
+    villianHealth -= goodGuyHit;
+  }
+
+  if(heroHealth <= 0){
+    console.log(goodGuy.destroy());
+  }
+
+  if(villianHealth <= 0){
+    console.log(badGuy.destroy());
+  }
+  
+}
+
+fight();
